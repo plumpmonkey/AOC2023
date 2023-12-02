@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+from enum import Enum
 
 dirname = os.path.dirname(__file__)
 input_file = os.path.join(dirname, 'sample.txt')
