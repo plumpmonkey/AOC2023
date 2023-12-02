@@ -24,19 +24,15 @@ cube_colours = {
     'blue': Colours.BLUE.value,
 }
 
-def part1(data):
-    print("Part 1")
+def process_data(data):
 
-    valid_games = 0
+    print(f'{Colours.BOLD.value}Processing data{Colours.NORMAL.value}')
+    # Define a list to store the processed data
+    processed_data = []
 
-    max_red, max_green, max_blue = 12, 13, 14
-
+    # Loop through each game
     for game in data:
-        # Initialise the counts of cubes for this game
-        game_total_red, game_total_green, game_total_blue = 0, 0, 0
 
-        # Initialise valid game flag
-        valid_game = True
 
         # Split the game data from the round information. One maximum split
         game_number, round_data = game.split(':', 1)
@@ -47,6 +43,12 @@ def part1(data):
 
         print()
         print(f'{Colours.YELLOW.value}Game Number = {game_number}{Colours.NORMAL.value}')
+        
+        # Initialise the data for this game
+        game_data = {
+            'Game_Number': game_number,
+            'Rounds': []
+        }
 
         # Split the data into a list of rounds 
         rounds = round_data.split(';')
@@ -78,23 +80,77 @@ def part1(data):
             # print out the round_data in the format "round_num: red, green, blue", but using the correct colours
             print(f'{Colours.YELLOW.value}Round:{round_num}: {cube_colours["red"]}{round_total_red} red{Colours.NORMAL.value}, {cube_colours["green"]}{round_total_green} green{Colours.NORMAL.value}, {cube_colours["blue"]}{round_total_blue} blue{Colours.NORMAL.value}')
 
-            # If the round total for any colour is greater than the maximum, flag this as an invalid game
-            if round_total_red > max_red or round_total_green > max_green or round_total_blue > max_blue:
-                print(f'{Colours.RED.value}Invalid game{Colours.NORMAL.value}')
-                valid_game = False
+            round_data = {
+                'round_num': round_num,
+                'red': round_total_red,
+                'green': round_total_green,
+                'blue': round_total_blue
+            }
+
+            game_data['Rounds'].append(round_data)
+        
+        processed_data.append(game_data)
+
+    return processed_data
+
+def part1(data):
+    print()
+    print(f'{Colours.BOLD.value}Part 1')
+    print(f'======{Colours.NORMAL.value}')
+
+    valid_games = 0
+
+    max_red, max_green, max_blue = 12, 13, 14
+
+    # Loop through each game in the processed data
+    for game in data:
+        # Loop through each round
+        for round in game['Rounds']:
+            if round['red'] > max_red or round['green'] > max_green or round['blue'] > max_blue:
+                print(f'{Colours.RED.value}Invalid game {game["Game_Number"]} {Colours.NORMAL.value}')
                 break
+        else:
+            print(f'{Colours.GREEN.value}Valid game {game["Game_Number"]} {Colours.NORMAL.value}')
+            valid_games += int(game['Game_Number'])
 
-        if valid_game:
-            # Add the game_id to the list of valid games
-            print(f'{Colours.GREEN.value}Valid game {game_number} {Colours.NORMAL.value}')
-            valid_games += int(game_number)
+    print(f'{Colours.BOLD.value}\nResult')
+    print(f'======{Colours.NORMAL.value}')
 
-    print(f'{Colours.YELLOW.value}\nValid games = {valid_games}{Colours.NORMAL.value}')
+    print(f'{Colours.YELLOW.value}Valid games = {valid_games}{Colours.NORMAL.value}')
     return 
 
 
 def part2(data):
     print("Part 2")
+
+    total_game_power = 0
+
+    # Loop through each game in the processed data
+    for game in data:
+        print(f'{Colours.BOLD.value}\nGame {game["Game_Number"]} {Colours.NORMAL.value}')
+        max_red, max_green, max_blue = 0, 0, 0
+    
+        # Loop through each round
+        for round in game['Rounds']:
+            if round['red'] > max_red:
+                max_red = round['red']
+            if round['green'] > max_green:
+                max_green = round['green']
+            if round['blue'] > max_blue:
+                max_blue = round['blue']
+
+        print(f'{Colours.YELLOW.value}Max: {Colours.RED.value}{max_red} red{Colours.NORMAL.value}, {Colours.GREEN.value}{max_green} green{Colours.NORMAL.value}, {Colours.BLUE.value}{max_blue} blue{Colours.NORMAL.value}')
+
+        game_power = max_red * max_green * max_blue
+
+        print(f'{Colours.YELLOW.value}Game power: {game_power}{Colours.NORMAL.value}')
+
+        total_game_power += game_power
+
+    print(f'{Colours.BOLD.value}\nResult')
+    print(f'======{Colours.NORMAL.value}')
+
+    print(f'{Colours.YELLOW.value}Total game power = {total_game_power}{Colours.NORMAL.value}')
 
     return
 
@@ -108,8 +164,11 @@ def main():
     with open(input_file) as f:
         data = f.read().splitlines()
 
-        part1(data)
-        part2(data)
+        # Process the data into games and rounds
+        processed_data = process_data(data)
+
+        part1(processed_data)
+        part2(processed_data)
 
 if __name__ == "__main__":
     main()
