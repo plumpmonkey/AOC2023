@@ -106,11 +106,15 @@ def part1(data):
     for game in data:
         # Loop through each round
         for round in game['Rounds']:
+            # Check if any of the colours are over the maximum
             if round['red'] > max_red or round['green'] > max_green or round['blue'] > max_blue:
+                # Mark the game as invalid and break out of the loop
                 print(f'{Colours.RED.value}Invalid game {game["Game_Number"]} {Colours.NORMAL.value}')
                 break
         else:
+            # If the loop completes without breaking, then the game is valid
             print(f'{Colours.GREEN.value}Valid game {game["Game_Number"]} {Colours.NORMAL.value}')
+            # Increment the valid game count by the game ID
             valid_games += int(game['Game_Number'])
 
     print(f'{Colours.BOLD.value}\nResult')
@@ -132,6 +136,8 @@ def part2(data):
     
         # Loop through each round
         for round in game['Rounds']:
+            # Check if any of the colours in this round is the highest we have ever seen
+            # If it is, then update the max value.
             if round['red'] > max_red:
                 max_red = round['red']
             if round['green'] > max_green:
@@ -139,8 +145,10 @@ def part2(data):
             if round['blue'] > max_blue:
                 max_blue = round['blue']
 
+        # Print out the max values for this game
         print(f'{Colours.YELLOW.value}Max: {Colours.RED.value}{max_red} red{Colours.NORMAL.value}, {Colours.GREEN.value}{max_green} green{Colours.NORMAL.value}, {Colours.BLUE.value}{max_blue} blue{Colours.NORMAL.value}')
 
+        # Calculate the game power (Max values multiplied together)
         game_power = max_red * max_green * max_blue
 
         print(f'{Colours.YELLOW.value}Game power: {game_power}{Colours.NORMAL.value}')
