@@ -5,3 +5,4 @@ Advent of Code 2023 Challenges
 |:-------|:------------------------|:----------------------------------------------------------------|
 | [Day 1](https://adventofcode.com/2023/day/1)  | Trebuchet?!        | More difficult than traditional Day 1 - Used `regex` to find digits in a string. Part 2 complex in that also used words, but text could overlap. Used `regex` instead of `re` for `overlapped` keyword |
 | [Day 2](https://adventofcode.com/2023/day/2)  | Cube Conundrum     | Parsed input data into `Games` and `Rounds` using `split` and `enumerate`. Each round had coloured cubes. Some basic math on the results.  |
+| [Day 3](https://adventofcode.com/2023/day/3)  | Gear Ratios     |   |
