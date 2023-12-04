@@ -1,5 +1,11 @@
 # [Day X: XXX](https://adventofcode.com/2023/day/X)
 
-## Part One
+## Solution Notes
 
-## Part Two
+### Part One
+
+### Part Two
+
+## Part One - Problem Description
+
+## Part Two - Problem Description
