@@ -1,6 +1,42 @@
 # [Day 3: Gear Ratios](https://adventofcode.com/2023/day/3)
 
-## Part One
+## Solution Notes
+
+I feel like I totally over engineered this. I built the following classes to solve this problem and extended them so they could be used in future problems (such as printing the grid columns, which is not required for this problem). Created a `helpers.py` file to store these classes and functions.
+
+ - Defined a Point class (used in AOC2022 Day 17 and Day 22). 
+   - Allows you to find the point neighbours, and optionally include diagonals.
+   - Add a vector to the point and return a new point. (Used in AOC2022 - not required for this problem)
+ - Defined a Grid class which is a grid of Points.
+   - Get and Set values in the grid
+   - Validate if a Point is within the grid (boundary checking)
+   - Return a given column of the grid (not required for this problem, but has been used in previous years, so Im prepping!)
+
+Also defined in the main code a class called `Schematic`, which is of type Grid. This was extending the Grid class to:
+
+  - Find all symbol locations in the grid
+  - Find all part number ranges in the grid (Start and end points)
+  - Find the value of a part number for a given range 
+  
+Part 1 implementation:
+
+ - Find all symbol locations
+ - Find the adjacent points in the grid for each symbol location - with boundary checking
+ - If the adjacent point is a digit, store the location as the part number
+ - For all part numbers, determine the range of the part number (start and end points) and store these in a set so that we dont duplicate the parts
+ - Sum the values
+  
+### Part 2
+
+For part 2 we could reuse the data we had found already with the symbol locations and ranges.
+
+ - Find the **gear** symbol `*` locations
+ - Find the adjacent points in the grid for each gear location - with boundary checking
+ - Determine if the adjacent points are are in known number ranges.
+ - If its in a range thats adacent to the gear, store the part number
+ - If there are 2 part numbers for a given gear, calculate the gear ratio
+ - 
+## Part One - Problem Description
 
 You and the Elf eventually reach a gondola lift station; he says the gondola lift will take you up to the **water source**, but this is as far as he can bring you. You go inside.
 
@@ -32,7 +68,7 @@ In this schematic, two numbers are **not** part numbers because they are not adj
 
 Of course, the actual engine schematic is much larger. **What is the sum of all of the part numbers in the engine schematic?**
 
-## Part Two
+## Part Two - Problem Description
 
 The engineer finds the missing part and installs it in the engine! As the engine springs to life, you jump in the closest gondola, finally ready to ascend to the water source.
 
@@ -63,12 +99,4 @@ In this schematic, there are **two** gears. The first is in the top left; it has
 
 **What is the sum of all of the gear ratios in your engine schematic?**
 
-## Solution Notes
-
-I feel like I totally over engineered this. I built the following classes to solve this problem and extended them so they could be used in future problems (such as printing the grid columns, which is not required for this problem)
-
- - Defined a Point class (used in AOC2022 Day 17 and Day 22)
- - Defined a Grid class to store the engine schematic
-
-### Part 2
 
