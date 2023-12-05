@@ -3,7 +3,7 @@ import os
 from enum import Enum
 
 dirname = os.path.dirname(__file__)
-input_file = os.path.join(dirname, 'sample.txt')
+input_file = os.path.join(dirname, 'input.txt')
 
 # Define the colours used for text printing
 class Colours(Enum):
@@ -22,19 +22,38 @@ def part1(seeds, maps, num_maps, map_names):
     print(f'{Colours.BOLD.value}Part 1')
     print(f'======{Colours.NORMAL.value}')
 
+    seed_result = []
+
+    # Loop through each seed in the input data
     for seed in seeds:
-        print(f'{Colours.YELLOW.value}Seed:{Colours.NORMAL.value} {seed}')
+        # print(f'{Colours.YELLOW.value}Seed:{Colours.NORMAL.value} {seed}')
 
+        resource_value = seed
+
+        # Take the value and loop through each map in turn.
         for map_num in range(num_maps):
-            print(f'\t{Colours.YELLOW.value}Map:{Colours.NORMAL.value} {map_num+1} - {map_names[map_num]}')
+            # print(f'\t{Colours.YELLOW.value}Map:{Colours.NORMAL.value} {map_num+1} - {map_names[map_num]}')
 
-            # Index into the maps list to get the current map
+            # Loop through each entry in the map and check if the value is in the range
+            # If it is, change the value. If the number is not in the map, it stays the same
+
             for value in maps[map_num]:
-                print(f"\t\t{value} - Range = {value[1]} to {value[1] + value[2]}")
-                if value[1] <= seed < value[1] + value[2]:
-                    print(f"\t\t\t{Colours.GREEN.value}Value {seed} Found{Colours.NORMAL.value}")
+                # print(f"\t\t{value} - Range = {value[1]} to {value[1] + value[2]}")
+                if value[1] <= resource_value < value[1] + value[2]:
+                    # print(f"\t\t\t{Colours.GREEN.value}Value {resource_value} Found - Changing to {resource_value + (value[0] - value[1])}{Colours.NORMAL.value}")
+
+                    # Adjust the resource value by the destination range
+                    resource_value += (value[0] - value[1])
+
                     break
 
+        # print(f'\t{Colours.YELLOW.value}Final Resource Value:{Colours.BOLD.value}{Colours.BLUE.value} {resource_value}{Colours.NORMAL.value}')
+        seed_result.append(resource_value)
+
+
+    # Determine the minimum value in seed_result
+    min_value = min(seed_result)
+    print(f'{Colours.YELLOW.value}Minimum Value:{Colours.BOLD.value}{Colours.BLUE.value} {min_value}{Colours.NORMAL.value}')
     return 
 
 
@@ -78,8 +97,8 @@ def process_data(data):
     if current_map:
         maps.append(current_map)
 
-    print(f'{Colours.BOLD.value}Seeds:{Colours.NORMAL.value} {seeds}')
-    print(f'{Colours.BOLD.value}Maps:{Colours.NORMAL.value} {maps}')
+    # print(f'{Colours.BOLD.value}Seeds:{Colours.NORMAL.value} {seeds}')
+    # print(f'{Colours.BOLD.value}Maps:{Colours.NORMAL.value} {maps}')
 
     # print out how many maps we have
     num_maps = len(maps)
