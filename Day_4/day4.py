@@ -87,14 +87,12 @@ def part2(cards):
         # print(f'{Colours.YELLOW.value}\tNumber of Matches: {Colours.BLUE.value}{card.number_of_matches}{Colours.NORMAL.value}')
         # print(f'{Colours.YELLOW.value}\tNumber of Instances: {Colours.BLUE.value}{card.number_of_instances}{Colours.NORMAL.value}')
         
-        # repeat for the number of instances of this card
-        for i in range(card.number_of_instances):               
-            for i in range(card.number_of_matches):
-                # print(f'Adding one to card {card.id + i + 1}    ')
-                
-                # Ensure we are not going out of range
-                if card.id + i + 1 in cards:
-                    cards[card.id + i + 1].number_of_instances += 1
+        for i in range(card.number_of_matches):
+            # print(f'Adding one to card {card.id + i + 1}    ')
+            
+            # Ensure we are not going out of range
+            if card.id + i + 1 in cards:
+                cards[card.id + i + 1].number_of_instances += card.number_of_instances
         
     # Print the final state of the cards
     # for card_id, card in cards.items():
