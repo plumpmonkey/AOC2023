@@ -44,12 +44,40 @@ def part1(times, distances):
         margin_of_error *= len(results)
 
     print(f'Margin of error: {margin_of_error}')
-def part2(data):
+
+def part2(times, distances):
     print()
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
 
+    # Convert the times to a single number
+    times_str = ''.join([str(x) for x in times])
+    time = int(times_str)
+
+    # Do the same for the distances
+    distances_str = ''.join([str(x) for x in distances])
+    distance = int(distances_str)
+
+    print(f'Time: {time}')
+    print(f'Distance: {distance}')
+
+    for j in range(time):
+        if j * (time - j) > distance:
+            start = j
+            break
+    for j in range(time, 0, -1):
+        if j * (time - j) > distance:
+            end = j
+            break
+
+    print(f'Start: {start}')
+    print(f'End: {end}')
+    
+    print(f'Total Wins {end - start + 1}')
     return
+
+
+
 
 
 def main():
@@ -69,6 +97,7 @@ def main():
         distances = [int(x) for x in re.findall(r'\d+', distances_line)]
     
         part1(times, distances)
+        part2(times, distances)
 
 if __name__ == "__main__":
     main()
