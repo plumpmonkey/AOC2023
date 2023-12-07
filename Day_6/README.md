@@ -3,6 +3,18 @@
 ## Solution Notes
 
 ### Part One
+This loops through each time in the input and calculates the distance traveled for each time. It then compares the distance traveled to the record distance and increments the number of ways to win if the distance traveled is greater than the record distance.
+
+We store the wins in a `defaultdict` with the key being the race number and the values being a sub dict of the number of hold milisections and distance traveled. Only the winning distances are stored.
+
+The result is the number of ways to win in each race multiplied together.
+
+### Part Two
+This is really a quadratic equation, but math is hard. Instead the solution starts at the beginning and loops through until we find the first win condition. This value is stored
+
+We then do the same but start at the end, and work backwards, this would be the final win condition. Everything between (and including) these two values is a win condition.
+
+### Part One
 
 The ferry quickly brings you across Island Island. After asking around, you discover that there is indeed normally a large pile of sand somewhere near here, but you don't see anything besides lots of water and the small island where the ferry has docked.
 
