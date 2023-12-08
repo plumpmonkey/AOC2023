@@ -3,6 +3,22 @@
 
 ### Part One
 
+The Python `Collections` class has a `Counter` object that is perfect for this problem. It is a dictionary that counts the number of times a key appears in a list. For example:
+
+```python
+from collections import Counter
+
+hand = ['32T3K']
+hand_count = Counter(hand).most_common()
+print(hand_count)
+
+[('3', 2), ('2', 1), ('T', 1), ('K', 1)]
+```
+
+Created a `Hand` class to store the hand and its rank. The `Hand` class has a `__lt__` method that compares Hand type of the hand, followed the rank of the card scores of two hands.
+
+```python
+
 ### Part Two
 
 ## Part One - Problem Description
