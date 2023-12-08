@@ -121,7 +121,7 @@ def main():
 
         left_right_instructions,nodes = parse_map(data)
 
-        # part1(left_right_instructions,nodes)
+        part1(left_right_instructions,nodes)
         part2(left_right_instructions,nodes)
 
 if __name__ == "__main__":
