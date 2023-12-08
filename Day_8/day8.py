@@ -104,8 +104,8 @@ def parse_map(data):
         nodes[source] = tuple(dest.replace("(", "").replace(")", "").replace(" ", "").split(","))
         
 
-    print(f'{Colours.BLUE.value}Left/Right Instructions: {left_right_instructions}{Colours.NORMAL.value}')
-    print(f'{Colours.BLUE.value}Nodes: {nodes}{Colours.NORMAL.value}')
+    # print(f'{Colours.BLUE.value}Left/Right Instructions: {left_right_instructions}{Colours.NORMAL.value}')
+    # print(f'{Colours.BLUE.value}Nodes: {nodes}{Colours.NORMAL.value}')
 
     return left_right_instructions, nodes
 
