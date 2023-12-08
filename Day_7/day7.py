@@ -32,20 +32,27 @@ class Hand:
                   "Pair" : 2,
                   "HighCard" : 1 }
     
-    def __init__(self, cards: str, bid: int) -> None:
+    def __init__(self, cards: str, bid: int, wildcard=False) -> None:
         # Initialise the hand
         self.cards = cards
         self.bid = bid
+        self.wildcard = wildcard
         self.hand_type= self.get_hand_type()  
+
+        # If we have a wildcard, then override the joker score
+        if self.wildcard:
+            Hand.card_scores["J"] = 1
     
     def get_hand_type_name(self, hand_type_value: int) -> str:
         reverse_hand_type = {value: key for key, value in Hand.hand_type_dict.items()}
         return reverse_hand_type.get(hand_type_value, "Unknown Hand Type")
 
     def get_hand_type(self) -> int:
-
+        # Work on a local copy of the cards
+        cards = self.cards
+        
         # This returns a  list of tuples with the key (card) and the count
-        counts = Counter(self.cards).most_common()
+        counts = Counter(cards).most_common()
 
         # To understand the hand type, we need to know what the count
         # of the most common card was, and also the count of the second
@@ -59,35 +66,61 @@ class Hand:
         #
 
         # Get the count of the most common card, and its type
-        best_card, best_card_count = counts[0]
+        most_common_card, most_common_card_count = counts[0]
 
         # If this is 5, then we have a five of a kind and we are done,
         # same for 4 of a kind
-        if best_card_count == 5:
+        if most_common_card_count == 5:
             return self.hand_type_dict["FiveOfKind"]
-        elif best_card_count == 4:
+
+
+        # If we have a wildcard then we may need to change some cards
+        if self.wildcard:
+
+            
+            print(f'Wildcard detected - most common card is {most_common_card} with a count of {most_common_card_count}')
+            # Check that "J" is not the most frequent card
+            if most_common_card == "J":
+                # If it is, then we need to change it to the second most common card
+                second_most_common_card, second_most_common_card_count = counts[1]
+
+                most_common_card = second_most_common_card
+                most_common_card_count = second_most_common_card_count
+
+            # Convert all the "J" cards to the most common card
+            cards = cards.replace("J", most_common_card)
+
+            # We now need to re-calculate the counts
+            counts = Counter(cards).most_common()
+
+            # Get the count of the most common card, and its type
+            most_common_card, most_common_card_count = counts[0]
+
+            if most_common_card_count == 5:
+                return self.hand_type_dict["FiveOfKind"]
+
+        if most_common_card_count == 4:
             return self.hand_type_dict["FourOfKind"]
 
         # If we get here, then we have a three of a kind, full house, two pair
         # pair or high card
         # For these we need to know the count of the second most common card
-        second_best_card, second_best_card_count = counts[1]
+        second_most_common_card, second_most_common_card_count = counts[1]
 
         # If the best card is 3 and second best is 2, then we have a full house
-        if best_card_count == 3 and second_best_card_count == 2:
+        if most_common_card_count == 3 and second_most_common_card_count == 2:
             return self.hand_type_dict["FullHouse"]
-        elif best_card_count == 3 and second_best_card_count == 1:
+        elif most_common_card_count == 3 and second_most_common_card_count == 1:
             return self.hand_type_dict["ThreeOfKind"]
-        elif best_card_count == 2 and second_best_card_count == 2:
+        elif most_common_card_count == 2 and second_most_common_card_count == 2:
             return self.hand_type_dict["TwoPair"]
-        elif best_card_count == 2 and second_best_card_count == 1:
+        elif most_common_card_count == 2 and second_most_common_card_count == 1:
             return self.hand_type_dict["Pair"]
-        elif best_card_count == 1 and second_best_card_count == 1:
+        elif most_common_card_count == 1 and second_most_common_card_count == 1:
             return self.hand_type_dict["HighCard"]
         else:
-            print(f'Error: Unable to determine hand type for {self.cards}')       
-
-        
+            print(f'Error: Unable to determine hand type for {cards}')       
+       
         return 
 
 
@@ -108,8 +141,10 @@ class Hand:
             
             return Hand.card_scores[this_card] < Hand.card_scores[other_card]
         
-        assert False, "We should not get here"
+        # If we get here, then the hands are the same
+        assert False, "Hands are the same - here be dragons!"
 
+        
     def __str__(self) -> str:
         name = self.get_hand_type_name(self.hand_type).ljust(12)
         return (f'{Colours.BOLD.value}Cards: {Colours.NORMAL.value}{self.cards} - '
@@ -117,15 +152,33 @@ class Hand:
                 f'{Colours.BOLD.value}Bid: {Colours.NORMAL.value}{self.bid}')
 
 
+def process_hands(data, wildcard=False):
+    hands = []
+    for line in data:
+        cards, bid = line.split(' ')
+        hand = Hand(cards, int(bid), wildcard)
+        hands.append(hand)
+    hands = sorted(hands)
+    return hands
 
-def part1(hands: list[Hand]):
+def print_hands(hands):
+    print(f'{Colours.YELLOW.value}Hands sorted by hand type and then card scores{Colours.NORMAL.value}')
+    for hand in hands:
+        print(hand)
+
+
+def part1(data):
     print()
     print(f'{Colours.BOLD.value}Part 1')
     print(f'======{Colours.NORMAL.value}')
 
+    hands = process_hands(data)
+        
+    print_hands(hands)
+
     # Hands is already sorted by hand type and then card score ranging from lowest to highest
     # rank
-    # Determine the total winndons by adding the bid for each hand * its rank
+    # Determine the total winnings by adding the bid for each hand * its rank
     total_winnings = 0
 
     for index, hand in enumerate(hands):
@@ -140,6 +193,20 @@ def part2(data):
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
 
+    hands = process_hands(data, wildcard=True)
+        
+    print_hands(hands)
+
+    # Hands is already sorted by hand type and then card score ranging from lowest to highest
+    # rank
+    # Determine the total winnings by adding the bid for each hand * its rank
+    total_winnings = 0
+
+    for index, hand in enumerate(hands):
+        total_winnings += hand.bid * (index + 1)
+
+    print(f'{Colours.YELLOW.value}Total Winnings: {Colours.NORMAL.value}{total_winnings}')
+
     return
 
 
@@ -152,27 +219,7 @@ def main():
     with open(input_file) as f:
         data = f.read().splitlines()
 
-        hands = []
-        # Input data is in the format of:
-        # 32T3K 765
-        # The first 5 characters are the cards and the last number is the bid
-        for line in data:
-            cards, bid = line.split(' ')
-            
-            # Create a hand object
-            hand = Hand(cards, int(bid))
-
-            # Add the hand to the list
-            hands.append(hand)
-
-        # Sort the hands by hand type
-        hands = sorted(hands)
-
-        print(f'{Colours.YELLOW.value}Hands sorted by hand type and then card scores{Colours.NORMAL.value}')
-        for hand in hands:
-            print(hand)
-
-        part1(hands)
+        part1(data)
         part2(data)
 
 if __name__ == "__main__":

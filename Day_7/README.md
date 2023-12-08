@@ -21,6 +21,11 @@ Created a `Hand` class to store the hand and its rank. The `Hand` class has a `_
 
 ### Part Two
 
+Extended the `Hand` class to have a wildcard option. If this is set, then when determining hand time, the `J`s are replaced with the most common card in the hand. If the most common card was J, then we use the second most common card.
+
+Code had to change to work on a local copy of the cards, since if we end up with multiple hands that are the same, then we need to score the J card as score `1`. 
+
+```python
 ## Part One - Problem Description
 
 Your all-expenses-paid trip turns out to be a one-way, five-minute ride in an airship. (At least it's a cool airship!) It drops you off at the edge of a vast desert and descends back to Island Island.
