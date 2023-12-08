@@ -58,6 +58,7 @@ def part1(seeds, maps, num_maps, map_names):
 
 def process_ranges(range_list,maps):
 
+    # print(f'\t\t{Colours.YELLOW.value}Range List:{Colours.NORMAL.value} {range_list}')
     new_ranges = []
 
     for current_range in range_list:
@@ -67,67 +68,82 @@ def process_ranges(range_list,maps):
         end_value =  current_range[1] 
         # print(f'\t\t{Colours.YELLOW.value}Start Value:{Colours.NORMAL.value} {Colours.BOLD.value} {start_value} {Colours.NORMAL.value} - {Colours.YELLOW.value}End Value:{Colours.NORMAL.value}{Colours.BOLD.value} {end_value}{Colours.NORMAL.value} ')
 
-        values_adjusted = False
-
         tmp_ranges = [current_range]
 
+        values_adjusted = False
+
         while tmp_ranges:
+            # print(f'\t\t{Colours.RED.value}tmp Ranges:{Colours.NORMAL.value} {tmp_ranges}')
+
             tmp_range = tmp_ranges.pop()
+            # 
             start_value = tmp_range[0]
             end_value =  tmp_range[1] 
+
+            values_adjusted = False
+   
             # print(f'\t\t{Colours.YELLOW.value}Working Value:{Colours.NORMAL.value} {Colours.BOLD.value} {start_value} {Colours.NORMAL.value} - {Colours.YELLOW.value}End Value:{Colours.NORMAL.value}{Colours.BOLD.value} {end_value}{Colours.NORMAL.value} ')
-            ranges_adjusted = False
-
+            
             for value in maps:
-                if ranges_adjusted:
-                    break
-
-                # print(f"\t\t{value} - Map Range = {value[1]} to {value[1] + value[2] - 1}")
                 
-                # Check if start and end values are outside the range
-                if start_value > value[1] + value[2] or end_value < value[1]:
-                    print(f'\t\t\t{Colours.BLUE.value}All Outside Range - Skipping{Colours.NORMAL.value}')
+                # Calculate the range boundaries
+                range_start = value[1]
+                range_end = value[1] + value[2] - 1
+
+                # print(f"\t\t{value} - Map Range = {range_start} to {range_end}")
+
+                # Check all cases
+                if start_value < range_start and end_value < range_start:
+                    # print(f'\t\t\t{Colours.BLUE.value}Both start_value and end_value are below the range - Skipping{Colours.NORMAL.value}')
                     pass
-
-                # Check if start and end values are inside the range
-                elif start_value >= value[1] and end_value <= (value[1] + value[2]):
-                    # Start and end values are INSIDE the range
-                    print(f'\t\t\t{Colours.GREEN.value}All Inside Range - Adjusting values{Colours.NORMAL.value}')
-                    start_value += (value[0] - value[1])
-                    end_value += (value[0] - value[1]) 
-                    new_ranges.append((start_value, end_value))
-                    values_adjusted = True
-                    break
-                
-                # Check if start value is inside the range and end value is outside the range
-                elif start_value >= value[1] and end_value > (value[1] + value[2]):
-                    # Start value is INSIDE the range and end value is OUTSIDE the range
-                    print(f'\t\t\t{Colours.RED.value}Start Inside Range - End Outside Range - Splitting Ranges{Colours.NORMAL.value}')
-                    tmp_ranges.append((start_value, value[1] + value[2]))
-                    tmp_ranges.append((value[1] + value[2] + 1, end_value))
-                    # print(f'\t\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {tmp_ranges}')
-                    ranges_adjusted = True
-                    break
-
-                # Check if start value is outside the range and end value is inside the range
-                elif start_value < value[1] and end_value <= (value[1] + value[2]):
+                elif start_value < range_start and end_value >= range_start and end_value <= range_end:                
                     # Start value is OUTSIDE the range and end value is INSIDE the range
-                    # print(f'\t\t\t{Colours.RED.value}Start Outside Range - End Inside Range - Splitting ranges{Colours.NORMAL.value}')
+                    # print(f'\t\t\t{Colours.RED.value}Start Outside Range - End Inside Range - Splitting ranges to {(start_value, value[1] - 1)} and {(value[1], end_value)} {Colours.NORMAL.value}')
                     tmp_ranges.append((start_value, value[1] - 1))
                     tmp_ranges.append((value[1], end_value))
-                    # print(f'\t\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {tmp_ranges}')
-                    ranges_adjusted = True
+                    # print(f'\t\t\t{Colours.YELLOW.value}tmp Ranges:{Colours.NORMAL.value} {tmp_ranges}')
+                    values_adjusted = True
+
                     break
 
-                # Start and end values are outside the range, but covers the valid range. Split into 3 ranges
-                elif start_value < value[1] and end_value > (value[1] + value[2]):
-                    # print(f'\t\t\t{Colours.RED.value}Start Outside Range - End Outside Range - valid range in middle- Splitting ranges{Colours.NORMAL.value}')
+                elif start_value < range_start and end_value > range_end:
+                    # print(f'\t\t\t{Colours.RED.value}Start Outside Range - End Outside Range - valid range in middle- Splitting ranges to {(start_value, value[1] - 1)} {(value[1], value[1] + value[2] - 1)} {(value[1] + value[2], end_value)}{Colours.NORMAL.value}')
                     tmp_ranges.append((start_value, value[1] - 1))
-                    tmp_ranges.append((value[1], value[1] + value[2]))
-                    tmp_ranges.append((value[1] + value[2] + 1, end_value))
-                    # print(f'\t\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {tmp_ranges}')
-                    ranges_adjusted = True
+                    tmp_ranges.append((value[1], value[1] + value[2] -1))
+                    tmp_ranges.append((value[1] + value[2], end_value))
+                    # print(f'\t\t\t{Colours.YELLOW.value}Tmp Ranges:{Colours.NORMAL.value} {tmp_ranges}')
+                    values_adjusted = True
+
+                    break                
+
+                elif start_value >= range_start and start_value <= range_end and end_value <= range_end:
+                    start_value += (value[0] - value[1])
+                    end_value += (value[0] - value[1]) 
+                    # print(f'\t\t\t{Colours.RED.value}new_ranges {new_ranges} {Colours.NORMAL.value}')
+                    # print(f'\t\t\t{Colours.GREEN.value}All Inside Range - Adjusting values to {start_value}-{end_value} {Colours.NORMAL.value}')
+                    new_ranges.append((start_value, end_value))
+                    values_adjusted = True
+                    # print(f'\t\t\t{Colours.YELLOW.value}Finished adjusting - New Ranges:{Colours.NORMAL.value} {new_ranges}')
+                    values_adjusted = True
                     break
+
+                elif start_value >= range_start and start_value <= range_end and end_value > range_end:
+                    # Start value is INSIDE the range and end value is OUTSIDE the range
+                    # print(f'\t\t\t{Colours.RED.value}Start Inside Range - End Outside Range - Splitting Ranges to {(start_value, value[1] + value[2] -1)} {(value[1] + value[2], end_value)} {Colours.NORMAL.value}')
+                    tmp_ranges.append((start_value, value[1] + value[2]-1))
+                    tmp_ranges.append((value[1] + value[2] , end_value))
+                    # print(f'\t\t\t{Colours.YELLOW.value}Tmp Ranges:{Colours.NORMAL.value} {tmp_ranges}')
+                    values_adjusted = True
+                    break
+
+                    
+                elif start_value > range_end and end_value > range_end:
+                    # print(f'\t\t\t{Colours.BLUE.value}Both start_value and end_value are above the range - Skipping{Colours.NORMAL.value}')
+                    pass                
+                elif start_value > range_end and end_value < range_start:
+                    print(f'{Colours.RED.value}Both start_value and end_value are outside the range, and end_value is before start_value.{Colours.NORMAL.value}')
+                    # This shouldnt happen....
+                    pass
 
                 else:
                     print(f'\t\t\t{Colours.RED.value}Something went wrong{Colours.NORMAL.value}')
@@ -137,11 +153,13 @@ def process_ranges(range_list,maps):
                     print(f'\t\t\t{Colours.RED.value}start > end:{Colours.NORMAL.value} {start_value > (value[1] + value[2])}')
                     print(f'\t\t\t{Colours.RED.value}end < start:{Colours.NORMAL.value} {end_value < value[1]}')
                     print(f'\t\t\t{Colours.RED.value}end > end:{Colours.NORMAL.value} {end_value > (value[1] + value[2])}')
-                
 
             # Nothing changed, pass through the old range
             if not values_adjusted:
+                # print(f'\t\t{Colours.MAGENTA.value}No changes made - passing through old range {start_value},{end_value}{Colours.NORMAL.value}')
                 new_ranges.append((start_value, end_value))
+                # print(f'\t\t{Colours.MAGENTA.value}new_ranges {new_ranges} {Colours.NORMAL.value}')
+                
 
     # print(f'\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {new_ranges}')
 
@@ -178,11 +196,11 @@ def part2(seeds, maps, num_maps, map_names):
             # Process the current range(s) for the current map
             ranges_to_process = process_ranges(ranges_to_process, maps[map_num]) 
 
-        print(f'\t{Colours.YELLOW.value}Final Range:{Colours.NORMAL.value} {ranges_to_process}')  
+        # print(f'\t{Colours.YELLOW.value}Final Range:{Colours.NORMAL.value} {ranges_to_process}')  
 
         # Look through the list, and find the lowest value of the first element of any tuple
         min_value = min([x[0] for x in ranges_to_process])
-        print(f'\t{Colours.YELLOW.value}Minimum Value:{Colours.BOLD.value}{Colours.BLUE.value} {min_value}{Colours.NORMAL.value}')
+        # print(f'\t{Colours.YELLOW.value}Minimum Value:{Colours.BOLD.value}{Colours.BLUE.value} {min_value}{Colours.NORMAL.value}')
 
         if min_value < lowest_value or lowest_value == 0:
             lowest_value = min_value
