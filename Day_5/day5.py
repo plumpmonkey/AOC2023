@@ -56,11 +56,138 @@ def part1(seeds, maps, num_maps, map_names):
     print(f'{Colours.YELLOW.value}Minimum Value:{Colours.BOLD.value}{Colours.BLUE.value} {min_value}{Colours.NORMAL.value}')
     return 
 
+def process_ranges(range_list,maps):
 
-def part2(data):
+    new_ranges = []
+
+    for current_range in range_list:
+        # print(f'\t\t{Colours.YELLOW.value}Current Range:{Colours.NORMAL.value} {current_range}')
+
+        start_value = current_range[0]
+        end_value =  current_range[1] 
+        # print(f'\t\t{Colours.YELLOW.value}Start Value:{Colours.NORMAL.value} {Colours.BOLD.value} {start_value} {Colours.NORMAL.value} - {Colours.YELLOW.value}End Value:{Colours.NORMAL.value}{Colours.BOLD.value} {end_value}{Colours.NORMAL.value} ')
+
+        values_adjusted = False
+
+        tmp_ranges = [current_range]
+
+        while tmp_ranges:
+            tmp_range = tmp_ranges.pop()
+            start_value = tmp_range[0]
+            end_value =  tmp_range[1] 
+            # print(f'\t\t{Colours.YELLOW.value}Working Value:{Colours.NORMAL.value} {Colours.BOLD.value} {start_value} {Colours.NORMAL.value} - {Colours.YELLOW.value}End Value:{Colours.NORMAL.value}{Colours.BOLD.value} {end_value}{Colours.NORMAL.value} ')
+            ranges_adjusted = False
+
+            for value in maps:
+                if ranges_adjusted:
+                    break
+
+                # print(f"\t\t{value} - Map Range = {value[1]} to {value[1] + value[2] - 1}")
+                
+                # Check if start and end values are outside the range
+                if start_value > value[1] + value[2] or end_value < value[1]:
+                    print(f'\t\t\t{Colours.BLUE.value}All Outside Range - Skipping{Colours.NORMAL.value}')
+                    pass
+
+                # Check if start and end values are inside the range
+                elif start_value >= value[1] and end_value <= (value[1] + value[2]):
+                    # Start and end values are INSIDE the range
+                    print(f'\t\t\t{Colours.GREEN.value}All Inside Range - Adjusting values{Colours.NORMAL.value}')
+                    start_value += (value[0] - value[1])
+                    end_value += (value[0] - value[1]) 
+                    new_ranges.append((start_value, end_value))
+                    values_adjusted = True
+                    break
+                
+                # Check if start value is inside the range and end value is outside the range
+                elif start_value >= value[1] and end_value > (value[1] + value[2]):
+                    # Start value is INSIDE the range and end value is OUTSIDE the range
+                    print(f'\t\t\t{Colours.RED.value}Start Inside Range - End Outside Range - Splitting Ranges{Colours.NORMAL.value}')
+                    tmp_ranges.append((start_value, value[1] + value[2]))
+                    tmp_ranges.append((value[1] + value[2] + 1, end_value))
+                    # print(f'\t\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {tmp_ranges}')
+                    ranges_adjusted = True
+                    break
+
+                # Check if start value is outside the range and end value is inside the range
+                elif start_value < value[1] and end_value <= (value[1] + value[2]):
+                    # Start value is OUTSIDE the range and end value is INSIDE the range
+                    # print(f'\t\t\t{Colours.RED.value}Start Outside Range - End Inside Range - Splitting ranges{Colours.NORMAL.value}')
+                    tmp_ranges.append((start_value, value[1] - 1))
+                    tmp_ranges.append((value[1], end_value))
+                    # print(f'\t\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {tmp_ranges}')
+                    ranges_adjusted = True
+                    break
+
+                # Start and end values are outside the range, but covers the valid range. Split into 3 ranges
+                elif start_value < value[1] and end_value > (value[1] + value[2]):
+                    # print(f'\t\t\t{Colours.RED.value}Start Outside Range - End Outside Range - valid range in middle- Splitting ranges{Colours.NORMAL.value}')
+                    tmp_ranges.append((start_value, value[1] - 1))
+                    tmp_ranges.append((value[1], value[1] + value[2]))
+                    tmp_ranges.append((value[1] + value[2] + 1, end_value))
+                    # print(f'\t\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {tmp_ranges}')
+                    ranges_adjusted = True
+                    break
+
+                else:
+                    print(f'\t\t\t{Colours.RED.value}Something went wrong{Colours.NORMAL.value}')
+                    print(f'\t\t\t{Colours.RED.value}Start Value:{Colours.NORMAL.value} {Colours.BOLD.value} {start_value} {Colours.NORMAL.value} - {Colours.YELLOW.value}End Value:{Colours.NORMAL.value}{Colours.BOLD.value} {end_value}{Colours.NORMAL.value} ')
+                    print(f'\t\t\t{Colours.RED.value}Map Range:{Colours.NORMAL.value} {value[1]} to {value[1] + value[2] - 1}')
+                    print(f'\t\t\t{Colours.RED.value}start < start:{Colours.NORMAL.value} {start_value < value[1]}')
+                    print(f'\t\t\t{Colours.RED.value}start > end:{Colours.NORMAL.value} {start_value > (value[1] + value[2])}')
+                    print(f'\t\t\t{Colours.RED.value}end < start:{Colours.NORMAL.value} {end_value < value[1]}')
+                    print(f'\t\t\t{Colours.RED.value}end > end:{Colours.NORMAL.value} {end_value > (value[1] + value[2])}')
+                
+
+            # Nothing changed, pass through the old range
+            if not values_adjusted:
+                new_ranges.append((start_value, end_value))
+
+    # print(f'\t\t{Colours.YELLOW.value}New Ranges:{Colours.NORMAL.value} {new_ranges}')
+
+    return new_ranges
+
+
+def part2(seeds, maps, num_maps, map_names):
     print()
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
+
+    lowest_value = 0
+
+    # Convert the seeds to tuples of ranges
+    seed_ranges = [(seeds[i], (seeds[i]+seeds[i+1]) -1) for i in range(0, len(seeds), 2)]
+    # print(f'{Colours.YELLOW.value}Seed Ranges:{Colours.NORMAL.value} {seed_ranges}')
+
+    # Loop through each range in turn
+    for seed_range in seed_ranges:
+        # print(f'{Colours.YELLOW.value}Range:{Colours.NORMAL.value} {seed_range}')
+
+        # Set the current_range to be the seed_range - but have this as a list so we can split the ranges later
+        ranges_to_process = [seed_range]
+        # print(f'\t{Colours.YELLOW.value}Starting Range:{Colours.NORMAL.value} {ranges_to_process}')
+
+        # start_value = current_range[0]
+        # end_value =  current_range[1] 
+        # print(f'\t{Colours.YELLOW.value}Start Value:{Colours.NORMAL.value} {Colours.BOLD.value} {start_value} {Colours.NORMAL.value} - {Colours.YELLOW.value}End Value:{Colours.NORMAL.value}{Colours.BOLD.value} {end_value}{Colours.NORMAL.value} ')
+
+        # loop through each map in turn passing in the range or ranges to be processed
+        for map_num in range(num_maps): 
+            # print(f'\t{Colours.YELLOW.value}Map:{Colours.NORMAL.value} {map_num+1} - {map_names[map_num]} - {Colours.YELLOW.value} {Colours.NORMAL.value}')
+
+            # Process the current range(s) for the current map
+            ranges_to_process = process_ranges(ranges_to_process, maps[map_num]) 
+
+        print(f'\t{Colours.YELLOW.value}Final Range:{Colours.NORMAL.value} {ranges_to_process}')  
+
+        # Look through the list, and find the lowest value of the first element of any tuple
+        min_value = min([x[0] for x in ranges_to_process])
+        print(f'\t{Colours.YELLOW.value}Minimum Value:{Colours.BOLD.value}{Colours.BLUE.value} {min_value}{Colours.NORMAL.value}')
+
+        if min_value < lowest_value or lowest_value == 0:
+            lowest_value = min_value
+
+    print(f'{Colours.YELLOW.value}Lowest Value:{Colours.BOLD.value}{Colours.BLUE.value} {lowest_value}{Colours.NORMAL.value}')
 
     return
 
@@ -118,7 +245,7 @@ def main():
         seeds, maps, num_maps, map_names = process_data(data)
 
         part1(seeds, maps, num_maps, map_names) 
-        part2(data)
+        part2(seeds, maps, num_maps, map_names)
 
 if __name__ == "__main__":
     main()
