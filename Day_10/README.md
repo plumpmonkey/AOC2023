@@ -1,14 +1,20 @@
-# [Day X: XXX](https://adventofcode.com/2023/day/X)
+# [Day 10: Pipe Maze](https://adventofcode.com/2023/day/10)
 
 ## Solution Notes
 
 ### Part One
 
-A tricky one... had to extend the `Grid` class to have a `Pipes` class. The key parts of this are two dictionaries `pipe_to_valid_direction` and `valid_pipes_in_direction`. With these we can load the map data into the grid and then call the new method `valid_neighbour_pipes`, which uses these dicts to understand whhich directions we can move from this pipe, and if the given direction pipe is a valid connection to this one.
+A tricky one... had to extend the `Grid` class to have a `Pipes` class. The key parts of this are two dictionaries `pipe_to_valid_direction` and `valid_pipes_in_direction`. With these we can load the map data into the grid and then call the new method `valid_neighbour_pipes`, which uses these dicts to understand which directions we can move from this pipe, and if the given direction pipe is a valid connection to this one.
 
 We then use a BFS to find the longest path from the start
 
 ### Part Two
+
+really quite unsure what I did and why :) but it worked! 
+
+Essentially created a duplicate map of only the pipes in my loop. I then work through these row by row flipping an indicator if I find a north bound pipe wall `|LJ`. I ignore all `-F7` chars, and only count characters if I an `inside`. Appears to work! - Also had to ignore the `S` char as this is a pipe, and is not a northbound char. Should probably have worked out what the correct symbol was and replaced it, but the guess of ignoring the char gave me the right answer.
+
+Not my best day... Im moving on.
 
 ## Part One - Problem Description
 

@@ -5,7 +5,7 @@ from helpers import Point, Grid, Colours, Pipes, Vectors
 from collections import deque
 
 dirname = os.path.dirname(__file__)
-input_file = os.path.join(dirname, 'input.txt')
+input_file = os.path.join(dirname, 'sample2.txt')
 
 def bfs_search(grid: Pipes, start: Point, end: Point) -> list[Point]:
 
@@ -46,8 +46,7 @@ def bfs_search(grid: Pipes, start: Point, end: Point) -> list[Point]:
                 # print(f'{Colours.RED.value}\tNeighbour {neighbour} already visited{Colours.NORMAL.value}')
                 pass
 
-
-    return max_steps, furthest_point
+    return max_steps, furthest_point, visited
 
 def part1(input_grid: Pipes):
     print()
@@ -60,19 +59,78 @@ def part1(input_grid: Pipes):
     print(f'Found starting point at {start}')   
     
     # Perform our BFS search
-    max_steps, furthest_point = bfs_search(input_grid, start, None)
+    max_steps, furthest_point, visited = bfs_search(input_grid, start, None)
     
     print()
     print(f'{Colours.BOLD.value}Part 1 Answer: {max_steps}{Colours.NORMAL.value}')
     print(f'{Colours.BOLD.value}Part 1 Answer: {furthest_point}{Colours.NORMAL.value}')
     
-    return 
+    return start, visited
 
 
-def part2(data):
+def part2(input_grid: Pipes, visited: list[Point], start: Point):
     print()
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
+
+
+    # Create a new Pipes map that only contains the visited points, copying across
+    # the pipe values from the original map
+    
+   
+    visited_grid = Pipes([[' ' for _ in range(input_grid.width())] for _ in range(input_grid.height())])
+    inside_grid = Pipes([[' ' for _ in range(input_grid.width())] for _ in range(input_grid.height())])
+
+    # Loop through all the points in the visited_grid
+    for point in visited_grid.all_points():
+        if point in visited:
+            # Copy the pipe value from the input_grid to the visited_grid
+            visited_grid.set_value(point, input_grid.get_value(point))
+
+
+
+
+    # print(visited_grid)
+
+    # Obatin the rows as a list of strings
+    rows = visited_grid.rows_as_str()
+
+    inside_count = 0
+    rownum, col = 0, 0
+
+    # Loop through each row, and each character in the row
+    for row in rows:
+        outside = True
+        col = 0
+        for char in row:
+            if char in "-S":
+                pass
+            elif char in "F7":
+                pass
+            # If we are outside and we find a "|","L", or "J" then transition to inside
+            elif outside and char in "|LJ":
+                outside = False
+                inside_grid.set_value(Point(col, rownum), char)
+
+            # If we are inside and we find a "|","L", or "J" then transition to outside 
+            elif not outside and char in "|LJ":
+                outside = True
+                inside_grid.set_value(Point(col, rownum), char)
+
+            # If we are inside and its any other character then increment the inside count
+            elif not outside:
+                inside_count += 1
+                inside_grid.set_value(Point(col, rownum), 'I')
+            else:
+                inside_grid.set_value(Point(col, rownum), 'O')
+
+            col += 1
+
+        rownum += 1
+
+    print(f'{Colours.BOLD.value}Part 2 Answer: {inside_count}{Colours.NORMAL.value}')
+
+    print(inside_grid)
 
     return
 
@@ -87,9 +145,12 @@ def main():
         data = f.read().splitlines()
 
         input_grid = Pipes(data)
+        print(input_grid.__repr__())
 
-        part1(input_grid)
-        part2(data)
+        
+        start, visited = part1(input_grid)
+
+        part2(input_grid, visited, start)
 
 if __name__ == "__main__":
     main()

@@ -78,6 +78,10 @@ class Grid:
         """ Return a list of all the points in the grid. """
         return [Point(x, y) for y in range(self._height) for x in range(self._width)]
 
+    def rows_as_str(self):
+        """ Render rows as str. Returns: list of str """
+        return ["".join(str(char) for char in row) for row in self._grid_array]
+    
     def cols_as_str(self):
         """ Render columns as str. Returns: list of str """
         cols_list = list(zip(*self._grid_array))
