@@ -8,6 +8,8 @@ Used `numpy` to perform the difference in the list. If the difference is all zer
 
 ### Part Two
 
+A simple change to the recursive function to check and modify the first element in the list rather than the last
+
 ## Part One - Problem Description
 
 You ride the camel through the sandstorm and stop where the ghost's maps told you to stop. The sandstorm subsequently subsides, somehow seeing you standing at an oasis!

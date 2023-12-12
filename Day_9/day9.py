@@ -18,12 +18,13 @@ class Colours(Enum):
     BOLD = "\033[1m"
     NORMAL = "\033[0m"
 
-def recursive_diff(sequence: np.array ) -> int:
+def recursive_diff(sequence: np.array, part2=False ) -> int:
     """
     Recursively calculate the differences between each element in the sequence and pass this new list
     back into the function until all the elements in the list are the same. Then return the difference
 
-    This difference gets added to the last value in the sequence and returned to the calling function
+    For Part 1 - This difference gets added to the last value in the sequence and returned to the calling function
+    For Part 2 - The difference is subtracted from the first value in the sequence and returned to the calling function
 
     We work all the way back to the top of the stack and return the final value
     """
@@ -41,10 +42,14 @@ def recursive_diff(sequence: np.array ) -> int:
         # recursively call this function again
         print(f'{Colours.YELLOW.value}Intermediate Differences: {Colours.NORMAL.value}{diffs}')
         
-        value = recursive_diff(diffs)
+        value = recursive_diff(diffs, part2)
 
-        # Add the value to the diff line
-        value += diffs[-1]
+        if part2 == False:
+            # Add the value to the diff line
+            value += diffs[-1]
+        else:
+            # Subtract the value from the first element in the sequence
+            value = diffs[0] - value
 
     return value
         
@@ -63,7 +68,7 @@ def part1(data):
         final = recursive_diff(np.array(history))
 
         # Add the final value + the value of the last element in the history to the history
-        history.append(final + history[-1])
+        history.append(final - history[-1])
         
         sum_of_values += history[-1]
 
@@ -81,6 +86,27 @@ def part2(data):
     print()
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
+
+    sum_of_values = 0
+    for history in data:
+        # Convert the string to a list of integers
+        history = list(map(int, history.split(' ')))
+
+        print(f'{Colours.BLUE.value}\nHistory: {Colours.NORMAL.value}{history}')
+        final = recursive_diff(np.array(history), True)
+
+        # Add the final value + the value of the last element as the first element in the history
+        history.insert(0, history[0] - final)
+        
+        sum_of_values += history[0]
+
+        print(f'{Colours.BLUE.value}Final History: {Colours.NORMAL.value}{history}')
+
+        # Print out the final value
+        print(f'{Colours.GREEN.value}New value: {Colours.NORMAL.value}{history[0]}')
+        print()
+
+    print(f'{Colours.BOLD.value}Sum of all values: {Colours.NORMAL.value}{sum_of_values}')
 
     return
 
