@@ -45,13 +45,31 @@ def part2(data):
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
 
+
+    arrangements = 0
+
+    # For each input line, split this into a springs string and a list of groups as integers
+    for line in data:
+        springs, groups_str = line.split(' ')
+
+        groups = list(map(int, groups_str.split(',')))
+
+        # Unfold the springs and groups    
+        unfolded_springs = "?".join(5 * [springs])
+        unfolded_groups = 5 * groups
+
+        print(f'{Colours.BLUE.value}{unfolded_springs} {unfolded_groups}{Colours.NORMAL.value}')
+        # Make groups a tuple so that it can be used as a key in cache (needs to be immutable, lists are not)
+        arrangements += calculate_arrangements(unfolded_springs, tuple(unfolded_groups))
+
+    print(f'{Colours.GREEN.value}Total arrangements: {arrangements}{Colours.NORMAL.value}')
+
     return
 
 @functools.cache
 def calculate_arrangements(springs, groups):
 
     # print(f'Entering calculate_arrangements with springs: {springs} and groups: {groups}')
-    
     
     def hash():
         # If the first character is a  hash, then the first n chars must be
@@ -148,6 +166,7 @@ def main():
         data = f.read().splitlines()
 
         part1(data)
+        part2(data)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,30 @@
 
 ### Part One
 
+Took some hints and advice from Reddit on this one. Used a recursive function to break this down and solve it. 
+
+The `calculate_arrangements` works through the string. 
+
+Some validation checks are first made:
+
+ - If there are no groups left, but some damaged springs (`#`) then the arrangement is invalid and 0 is returned.
+ - If there are no groups left, but no damaged springs (`#`) then the arrangement is valid and 1 is returned.
+ - If there are no damaged springs left, but there are some groups we havent processed, then its an invalid arrangement and 0 is returned.
+
+We then examine the next character.
+
+ - if its a period `.` then the character is skipped. 
+ - if it is a `#` then
+   -  the current current group size is examined, and any ? are replaced with `#`. 
+   -  The the next `n` chars of the group are not all `#` then its invalid
+   -  If the remaining part of the string is the same as the group size, and its the final group and return 1, otherwise if more groups to process, then this is invalid
+ - If the nex group could contain a separator `.` or `?`, then recurse, else return 0
+  
+The python library `functools` has a `lru_cache` decorator which caches the results of the function, so that if the same arguments are passed in, the function is not called again, but the cached result is returned. This is used to speed up the processing of the input. This is especially important for part 2.
+
 ### Part Two
+
+A simple change to unfold the inputs. As part 1 used a cache function, this is very quick to run.
 
 ## Part One - Problem Description
 You finally reach the hot springs! You can see steam rising from secluded areas attached to the primary, ornate building.
@@ -78,3 +101,37 @@ For each row, count all of the different arrangements of operational and broken 
 
 
 ## Part Two - Problem Description
+
+As you look out at the field of springs, you feel like there are way more springs than the condition records list. When you examine the records, you discover that they were actually folded up this whole time!
+
+To unfold the records, on each row, replace the list of spring conditions with five copies of itself (separated by ?) and replace the list of contiguous groups of damaged springs with five copies of itself (separated by ,).
+
+So, this row:
+
+```
+.# 1
+```
+Would become:
+
+```
+.#?.#?.#?.#?.# 1,1,1,1,1
+```
+The first line of the above example would become:
+
+```
+???.###????.###????.###????.###????.### 1,1,3,1,1,3,1,1,3,1,1,3,1,1,3
+```
+In the above example, after unfolding, the number of possible arrangements for some rows is now much larger:
+
+```
+???.### 1,1,3 - 1 arrangement
+.??..??...?##. 1,1,3 - 16384 arrangements
+?#?#?#?#?#?#?#? 1,3,1,6 - 1 arrangement
+????.#...#... 4,1,1 - 16 arrangements
+????.######..#####. 1,6,5 - 2500 arrangements
+?###???????? 3,2,1 - 506250 arrangements
+```
+
+After unfolding, adding all of the possible arrangement counts together produces `525152`.
+
+Unfold your condition records; **what is the new sum of possible arrangement counts**?
