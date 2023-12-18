@@ -16,6 +16,14 @@ To work on columns, we can transpose the data and repeat the process.
 
 ### Part Two
 
+Instead of performing `np.equal`, we can check for the number of differences between the two rows/columns. If the number of differences is equal to the number of columns/rows, we have a reflection line, but we can also check for exactly one difference. 
+
+```
+    diffs = np.sum(pattern[row_number] != pattern[row_number + 1])
+```
+
+As we are performing our symmetry tests, as long as the number of differences remains < 1 we can continue with our loops.
+
 ## Part One - Problem Description
 
 With your help, the hot springs team locates an appropriate spring which launches you neatly and precisely up to the edge of Lava Island.

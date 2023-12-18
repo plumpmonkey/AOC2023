@@ -47,10 +47,32 @@ def part1(patterns: list[np.ndarray]):
     return 
 
 
-def part2(data):
+def part2(patterns: list[np.ndarray]):
     print()
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
+
+    final_val = 0
+    for pattern in patterns:
+        print()
+        print(f'{Colours.BOLD.value}Pattern:{Colours.NORMAL.value}')
+        print(pattern)
+        print(f'{Colours.BLUE.value}Searching Rows:{Colours.NORMAL.value}')
+        row_num = find_symmetry(pattern, axis=0, num_differences=1)
+        
+        final_val += row_num * 100
+
+        # Transpose the pattern and find the symmetry line in the columns
+        print(f'{Colours.BLUE.value}Searching Columns:{Colours.NORMAL.value}')
+        print(f'{Colours.BOLD.value}Transposed Pattern:{Colours.NORMAL.value}')
+        print(pattern.T)
+        col_num = find_symmetry(pattern.T, axis=1, num_differences=1)
+
+        final_val += col_num
+
+        print(f'{Colours.YELLOW.value}Symmetry line is at row {row_num} and column {col_num}{Colours.NORMAL.value}')
+
+    print(f'{Colours.GREEN.value}Final value: {final_val}{Colours.NORMAL.value}')
 
     return
 
@@ -67,7 +89,7 @@ def parse_pattern(data) -> list[np.ndarray]:
 
     return patterns
 
-def find_symmetry(pattern: np.ndarray, axis: int = 0) -> int:
+def find_symmetry(pattern: np.ndarray, axis: int = 0, num_differences: int = 0) -> int:
     # Find the line of symmetry for the pattern and return the number
     # rows before the symmetry line.
 
@@ -78,11 +100,16 @@ def find_symmetry(pattern: np.ndarray, axis: int = 0) -> int:
 
     # Loop through each row and compare to the next row
     for row_number in range(len(pattern) - 1):
-        print(f'{Colours.BOLD.value}comparing {debug_text} {row_number} to {row_number + 1}{Colours.NORMAL.value}')
         print(f'\t{row_number} - {pattern[row_number]}')
         print(f'\t{row_number+ 1} - {pattern[row_number + 1]}')
 
-        if np.array_equal(pattern[row_number], pattern[row_number + 1]):
+        diffs = np.sum(pattern[row_number] != pattern[row_number + 1])
+        if num_differences == 0:
+            print(f'{Colours.BOLD.value}comparing {debug_text} {row_number} to {row_number + 1}{Colours.NORMAL.value}')
+        else: 
+            print(f'{Colours.BOLD.value}comparing {debug_text} {row_number} to {row_number + 1} - {diffs} differences{Colours.NORMAL.value}')
+
+        if diffs <= num_differences:
             print(f'{Colours.GREEN.value}Found potential symmetry at {debug_text} {row_number}{Colours.NORMAL.value}')
             
             # Validate the remaining rows are also symmetrical
@@ -99,12 +126,14 @@ def find_symmetry(pattern: np.ndarray, axis: int = 0) -> int:
                 print(f'\t{row_number + 2 + i} - {pattern[row_number + 2 + i]}')
                 print()
             
-                if not np.array_equal(pattern[row_number - 1 - i], pattern[row_number + 2 + i]):
+                diffs += np.sum(pattern[row_number - 1 - i] != pattern[row_number + 2 + i])
+                if diffs > num_differences:
                     print(f'{Colours.RED.value}Pattern is not symmetrical{Colours.NORMAL.value}')
                     is_symmetrical = False
                     break
 
-            if is_symmetrical:
+            # Check we are symmetrical and that the number of differences is correct.
+            if is_symmetrical and diffs == num_differences:
                 print(f'{Colours.GREEN.value}Pattern is symmetrical at {debug_text} {row_number} {Colours.NORMAL.value}')
                 return row_number + 1
     
@@ -122,7 +151,7 @@ def main():
 
         patterns = parse_pattern(data)
 
-        part1(patterns)
+        # part1(patterns)
         part2(patterns)
 
 if __name__ == "__main__":
