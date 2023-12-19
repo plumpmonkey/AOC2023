@@ -18,6 +18,9 @@ class LaserGrid(Grid):
 
         super().__init__(grid_array)
 
+    def reset(self):
+        self.energised_points = defaultdict(set)
+        self.path = []
 
     def get_valid_neighbours(self, position: Point, direction: tuple[int, int]) -> list[tuple[Point, tuple[int, int]]]:
         """ Return a list of the points that are adjacent to this point if they are valid to move to 
@@ -131,17 +134,19 @@ class LaserGrid(Grid):
                     self.energised_points[neighbour[0]].add(neighbour[1])
 
         
-        visted_points = {point for point, _ in visited} 
-        for y in range(self._height):
-            for x in range(self._width):
-                if Point(x,y) in visted_points:
-                    print(f'{Colours.BOLD.value}#{Colours.NORMAL.value}', end='')
-                else:
-                    print(f'{Colours.BOLD.value}.{Colours.NORMAL.value}', end='')
-            print()
+        # visted_points = {point for point, _ in visited} 
+        # for y in range(self._height):
+        #     for x in range(self._width):
+        #         if Point(x,y) in visted_points:
+        #             print(f'{Colours.BOLD.value}#{Colours.NORMAL.value}', end='')
+        #         else:
+        #             print(f'{Colours.BOLD.value}.{Colours.NORMAL.value}', end='')
+        #     print()
 
 
-        print(f'Energised points: {len(self.energised_points)}')
+        # print(f'Energised points: {len(self.energised_points)}')
+
+        return len(self.energised_points)
             
             
 
@@ -151,16 +156,42 @@ def part1(grid):
     print(f'{Colours.BOLD.value}Part 1')
     print(f'======{Colours.NORMAL.value}')
 
-    grid.bfs((Point(0, 0), Vectors.E.value))
+    energised = grid.bfs((Point(0, 0), Vectors.E.value))
 
+    print(f'Energised points: {energised}')
+    
     return 
 
 
-def part2(data):
+def part2(grid):
     print()
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
 
+    # We need to loop through all of the edges of the grid and run the bfs from each of them
+    # We need to start from all points in the top row heading south, all points in the bottom row heading north
+    # all points in the left column heading east and all points in the right column heading west
+
+    max_score = 0
+    for x in range(grid.height()):
+        grid.reset()
+        score = grid.bfs((Point(x, 0), Vectors.S.value))
+        max_score = max(max_score, score)
+        
+        grid.reset()
+        score = grid.bfs((Point(x, grid.width()-1), Vectors.N.value))
+        max_score = max(max_score, score)
+
+    for y in range(grid.height()):
+        grid.reset()
+        score = grid.bfs((Point(0, y), Vectors.E.value))
+        max_score = max(max_score, score)
+        
+        grid.reset()
+        score = grid.bfs((Point(grid.width()-1, y), Vectors.W.value))
+        max_score = max(max_score, score)
+    
+    print(f'Max score: {max_score}')
     return
 
 
@@ -176,7 +207,7 @@ def main():
         grid = LaserGrid(data)
 
         part1(grid)
-        part2(data)
+        part2(grid)
 
 if __name__ == "__main__":
     main()
