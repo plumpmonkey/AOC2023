@@ -20,7 +20,7 @@ class Colours(Enum):
     BOLD = "\033[1m"
     NORMAL = "\033[0m"
 
-def dijkstra(grid, start_point, end_point, max_steps=3):
+def dijkstra(grid, start_point, end_point, max_steps=3, min_steps=0):
 
     # Store the current state
     queue = []
@@ -64,9 +64,9 @@ def dijkstra(grid, start_point, end_point, max_steps=3):
                     possible_moves.append((new_point, direction, steps_taken+1))
 
         else:
+            if steps_taken < max_steps:
             # We are not at the start point so we can either move in the current direction if we are less than 3 steps,
             # or turn left or right
-            if steps_taken < max_steps:
                 # We can move in the current direction
                 new_point = current_point + direction
                
@@ -74,22 +74,23 @@ def dijkstra(grid, start_point, end_point, max_steps=3):
                 if 0 <= new_point.x < len(grid[0])  and 0 <= new_point.y < len(grid) :
                     possible_moves.append((new_point, direction, steps_taken+1))
 
-            # Turn left or right
-            # turn 90 degrees CCW (left)
-            new_direction = Point(-direction.y, direction.x)
-            new_point = current_point + new_direction
+            if steps_taken >= min_steps:
+                # Turn left or right
+                # turn 90 degrees CCW (left)
+                new_direction = Point(-direction.y, direction.x)
+                new_point = current_point + new_direction
 
-           # Validate the new point is within the grid
-            if 0 <= new_point.x < len(grid[0]) and 0 <= new_point.y < len(grid) :
-                possible_moves.append((new_point, new_direction, 1))
-            
-            # turn 90 degrees CW (right)
-            new_direction = Point(direction.y, -direction.x)
-            new_point = current_point + new_direction
-            
             # Validate the new point is within the grid
-            if 0 <= new_point.x < len(grid[0])  and 0 <= new_point.y < len(grid) :
-                possible_moves.append((new_point, new_direction, 1))
+                if 0 <= new_point.x < len(grid[0]) and 0 <= new_point.y < len(grid) :
+                    possible_moves.append((new_point, new_direction, 1))
+                
+                # turn 90 degrees CW (right)
+                new_direction = Point(direction.y, -direction.x)
+                new_point = current_point + new_direction
+                
+                # Validate the new point is within the grid
+                if 0 <= new_point.x < len(grid[0])  and 0 <= new_point.y < len(grid) :
+                    possible_moves.append((new_point, new_direction, 1))
 
         # print(f'\tPossible moves: {possible_moves}')
 
@@ -118,6 +119,13 @@ def part2(grid):
     print()
     print(f'{Colours.BOLD.value}Part 2')
     print(f'======{Colours.NORMAL.value}')
+
+    start_point = Point(0,0)
+    end_point = Point(len(grid[0])-1, len(grid)-1)
+
+    distances = dijkstra(grid, start_point, end_point, max_steps=10, min_steps=4)
+
+    print(f'Distance to end point: {distances}')
 
     return
 
